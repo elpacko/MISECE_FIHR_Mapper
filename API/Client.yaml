@@ -1,0 +1,121 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/SistemaDeConsultas/MISECE_Cliente/1.0.0
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/SistemaDeConsultas/MISECE/1.0.0
+info:
+  description: Definición del API para sistemas clientes de MISECE
+  version: "1.0.0"
+  title: MISECE Client
+  contact:
+    email: sistemadeconsultas@outlook.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+paths:
+  /patient:
+    get:
+      summary: Obtiene FHIR de paciente
+      operationId: getPatient
+      description: |
+        Obtiene la informacion del paciente en formato FHIR R4B
+      parameters:
+        - in: query
+          name: curp
+          description: Clave Única de Registro de Población
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Informacion en formato FHIR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PacienteFHIR'
+        '400':
+          description: 'CURP no registrado'
+  /update:
+    post:
+      summary: Pull de registros de pacientes
+      security:
+        - basicAuth: []
+      operationId: updateRecords
+      description: |
+        Endpoint para obtener los pacientes dados de alta a partir de
+        la fecha indicada en el parametro de entrada
+      parameters:
+        - in: query
+          name: last
+          description: Fecha del último registro
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pacientes'
+        '400':
+          description: 'Fecha invalida'
+        '401':
+          description: 'No autorizado'
+components:
+  schemas:
+    Pacientes:
+      type: array
+      items:
+        $ref: '#/components/schemas/PacienteItem'
+    PacienteItem:
+      type: object
+      properties:
+        curp:
+          type: string
+          example: XEXX010101HNEXXXA4
+        telefono:
+          type: string
+          format: phone
+          example: +526561231234
+        nombre:
+          type: string
+          example: 'John Doe'
+        email:
+          type: string
+          format: email
+          example: 'john.doe@example.com'
+    # Objeto Paciente de ejemplo con un par de propiedades
+    # https://www.hl7.org/fhir/patient-example.json.html
+    PacienteFHIR:
+      properties:
+        resourceType:
+          type: string
+          example: Patient
+        id:
+          type: string
+          example: 'XEXX010101HNEXXXA4'
+        name:
+          type: array
+          items:
+            $ref: '#/components/schemas/FHIRHumanName'
+      type: object
+    FHIRHumanName:
+      properties:
+        use:
+          type: string
+          example: 'official'
+        family:
+          type: string
+          example: 'Chalmers'
+        given:
+          type: array
+          items:
+            example: ["Peter","James"]
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
