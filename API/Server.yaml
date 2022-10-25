@@ -1,0 +1,77 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/SistemaDeConsultas/MISECE_Server/1.0.0
+info:
+  description: |
+    Definicion de la API del servicio de MISECE
+  version: "1.0.0"
+  title: MISECE API
+  contact:
+    email: sistemadeconsultas@outlook.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+paths:
+  /expediente:
+    post:
+      summary: Expediente FHIR del paciente
+      operationId: getExpediente
+      description: |
+        Obtiene el expediente FHIR del paciente
+      responses:
+        '200':
+          description: Información en formato FHIR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PacienteFHIR'
+        '400':
+          description: 'CURP Invalido'
+        '409':
+          description: 'CURP no encontrado'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestSchema'
+        description: Consulta expediente request
+components:
+  schemas:
+    RequestSchema:
+      type: object
+      properties:
+        consultor:
+          type: string
+          example: 'Dr. Mario'
+        codigo:
+          type: string
+          example: 123456
+    # Objeto Paciente de ejemplo con un par de propiedades
+    # https://www.hl7.org/fhir/patient-example.json.html
+    PacienteFHIR:
+      properties:
+        resourceType:
+          type: string
+          example: Patient
+        id:
+          type: string
+          example: 'XEXX010101HNEXXXA4'
+        name:
+          type: array
+          items:
+            $ref: '#/components/schemas/FHIRHumanName'
+      type: object
+    FHIRHumanName:
+      properties:
+        use:
+          type: string
+          example: 'official'
+        family:
+          type: string
+          example: 'Chalmers'
+        given:
+          type: array
+          items:
+            example: ["Peter","James"]
